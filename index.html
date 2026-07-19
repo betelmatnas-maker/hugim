@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>חוגי המתנ"ס | בית אל</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=Assistant:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFFBF5;
+    --bg-card:#FFFFFF;
+    --ink:#2B2118;
+    --ink-soft:#7A6C5D;
+    --line:#EEE3D2;
+    --coral:#FF6B4A;
+    --coral-soft:#FFE7DF;
+    --teal:#0F7A72;
+    --teal-soft:#DCF1EE;
+    --gold:#F5A623;
+    --gold-soft:#FDEBCF;
+    --plum:#8A4A72;
+    --plum-soft:#F5E3EE;
+    --sky:#2F7DC2;
+    --sky-soft:#E1EEFA;
+    --radius:18px;
+    --shadow: 0 6px 20px rgba(43,33,24,0.08);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth; -webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Assistant', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3, .display{ font-family:'Rubik', sans-serif; }
+  a{color:inherit;}
+  button{font-family:inherit;}
+
+  /* ---------- Header ---------- */
+  .hero{
+    position:relative;
+    background:linear-gradient(120deg, var(--coral) 0%, var(--gold) 55%, var(--teal) 100%);
+    padding:36px 24px 40px;
+    color:#fff;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.35) 2px, transparent 2px);
+    background-size: 26px 26px;
+    opacity:.35;
+  }
+  .hero-inner{max-width:1100px; margin:0 auto; position:relative; z-index:1;}
+  .hero-eyebrow{
+    font-weight:700; letter-spacing:.04em; font-size:13px;
+    background:rgba(255,255,255,.22); display:inline-block;
+    padding:6px 14px; border-radius:999px; margin-bottom:14px;
+  }
+  .hero h1{font-size:clamp(26px,6vw,44px); font-weight:800; margin:0 0 10px;}
+  .hero p.sub{font-size:clamp(14px,2.2vw,18px); margin:0 0 22px; max-width:560px; opacity:.95; font-weight:500;}
+
+  .search-wrap{ display:flex; gap:10px; max-width:520px; }
+  .search-wrap input{
+    flex:1; border:none; border-radius:14px; padding:14px 16px;
+    font-size:16px; font-family:inherit; box-shadow:var(--shadow);
+    min-width:0;
+  }
+  .search-wrap input:focus{outline:3px solid rgba(255,255,255,.6);}
+
+  /* ---------- Filters ---------- */
+  .filters{max-width:1100px; margin:26px auto 0; padding:0 24px;}
+  .filter-label{font-weight:700; font-size:13px; color:var(--ink-soft); margin:0 0 8px 2px;}
+  .chip-row{display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:8px; margin-bottom:16px;}
+  .chip-row::-webkit-scrollbar{height:5px;}
+  .chip-row::-webkit-scrollbar-thumb{background:var(--line); border-radius:4px;}
+  .chip{
+    flex:0 0 auto; border:1.5px solid var(--line); background:#fff; color:var(--ink);
+    padding:9px 16px; border-radius:999px; font-size:14px; font-weight:600; cursor:pointer;
+    white-space:nowrap; transition:.15s;
+  }
+  .chip.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .chip:hover:not(.active){border-color:var(--ink-soft);}
+
+  .active-bar{
+    max-width:1100px; margin:0 auto 6px; padding:0 24px;
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;
+  }
+  .results-meta{color:var(--ink-soft); font-size:14px; font-weight:700;}
+  .reset-btn{
+    border:none; background:var(--coral-soft); color:var(--coral); font-weight:700; font-size:13px;
+    padding:7px 14px; border-radius:999px; cursor:pointer; display:none;
+  }
+  .reset-btn.show{display:inline-block;}
+
+  /* ---------- Grid ---------- */
+  .grid{
+    max-width:1100px; margin:0 auto; padding:0 24px 60px;
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:16px;
+  }
+  .card{
+    background:var(--bg-card); border-radius:var(--radius); box-shadow:var(--shadow);
+    border:1px solid var(--line); cursor:pointer; overflow:hidden; text-align:right;
+    display:flex; flex-direction:column; transition:transform .15s, box-shadow .15s;
+  }
+  .card:hover{transform:translateY(-3px); box-shadow:0 12px 28px rgba(43,33,24,0.14);}
+  .card-top{padding:16px 18px 0;}
+  .card-icon{
+    width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center;
+    font-size:21px; margin-bottom:10px;
+  }
+  .tag-row{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px;}
+  .tag{font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:999px;}
+  .card h3{font-size:17px; margin:2px 0 6px; line-height:1.3;}
+  .meta-line{font-size:13.5px; color:var(--ink-soft); font-weight:600; margin:2px 0;}
+  .card-desc{
+    font-size:13.5px; color:var(--ink-soft); padding:0 18px; margin:8px 0 14px;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  }
+  .card-bottom{
+    margin-top:auto; padding:12px 18px; border-top:1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+  }
+  .price{font-weight:800; font-family:'Rubik',sans-serif;}
+  .cta-mini{font-size:13px; font-weight:700; color:var(--coral); white-space:nowrap;}
+
+  .empty-state{ max-width:1100px; margin:0 auto; padding:50px 24px; text-align:center; color:var(--ink-soft); }
+  .empty-state .big{font-size:38px; margin-bottom:10px;}
+  .empty-state button{
+    margin-top:14px; border:none; background:var(--ink); color:#fff; font-weight:700;
+    padding:11px 20px; border-radius:999px; cursor:pointer; font-size:14px;
+  }
+
+  /* ---------- Modal ---------- */
+  .overlay{
+    position:fixed; inset:0; background:rgba(43,33,24,.55); backdrop-filter:blur(2px);
+    display:none; align-items:flex-start; justify-content:center; z-index:50; padding:30px 16px; overflow-y:auto;
+  }
+  .overlay.open{display:flex;}
+  .modal{
+    background:var(--bg-card); border-radius:22px; max-width:560px; width:100%;
+    box-shadow:0 20px 60px rgba(0,0,0,.25); overflow:hidden; margin-top:20px;
+  }
+  .modal-head{padding:26px 26px 18px; position:relative;}
+  .modal-close{
+    position:absolute; left:16px; top:16px; background:var(--bg); border:none; width:34px; height:34px;
+    border-radius:50%; font-size:18px; cursor:pointer; color:var(--ink-soft);
+  }
+  .modal-icon{width:52px; height:52px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:26px; margin-bottom:12px;}
+  .modal h2{font-size:21px; margin:0 0 4px;}
+  .modal-body{padding:0 26px 10px; font-size:14.5px; color:var(--ink-soft); line-height:1.6;}
+  .info-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:16px 0;}
+  .info-item{background:var(--bg); border-radius:12px; padding:10px 12px;}
+  .info-item .lbl{font-size:11.5px; color:var(--ink-soft); font-weight:700; margin-bottom:2px;}
+  .info-item .val{font-weight:700; font-size:14px;}
+  .modal-footer{padding:18px 26px 26px;}
+  .btn{
+    display:block; width:100%; text-align:center; border:none; border-radius:14px; padding:15px;
+    font-weight:800; font-size:15.5px; cursor:pointer; font-family:'Rubik',sans-serif;
+  }
+  .btn-primary{background:var(--coral); color:#fff;}
+  .btn-primary:hover{background:#e85a3c;}
+  .btn-secondary{background:var(--bg); color:var(--ink); margin-top:10px;}
+
+  /* ---------- Form ---------- */
+  .form-step{padding:22px 26px 8px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:13.5px; font-weight:700; margin-bottom:6px;}
+  .field input[type=text], .field input[type=tel], .field input[type=date]{
+    width:100%; padding:12px 14px; border-radius:12px; border:1.5px solid var(--line);
+    font-size:16px; font-family:inherit; background:var(--bg);
+  }
+  .field input:focus{outline:2px solid var(--coral); border-color:var(--coral);}
+  .field.readonly input{color:var(--ink-soft); background:#f2ede3;}
+  .checkbox-field{display:flex; align-items:flex-start; gap:10px; font-size:13px; color:var(--ink-soft); margin:14px 0 4px;}
+  .checkbox-field input{margin-top:3px; min-width:16px;}
+  .terms-toggle{
+    background:none; border:none; color:var(--coral); font-weight:700; font-size:13px;
+    cursor:pointer; padding:0; text-decoration:underline; margin:2px 0 14px;
+  }
+  .terms-panel{
+    display:none; background:var(--bg); border-radius:12px; padding:14px 16px; font-size:12.5px;
+    color:var(--ink-soft); line-height:1.7; margin-bottom:14px;
+  }
+  .terms-panel.open{display:block;}
+  .terms-panel a{color:var(--coral); font-weight:700;}
+  .form-note{
+    background:var(--gold-soft); border-radius:12px; padding:12px 14px; font-size:12.5px;
+    color:#7a5a12; margin:6px 0 16px; line-height:1.55;
+  }
+  .success-box{padding:36px 26px; text-align:center;}
+  .success-box .big{font-size:44px; margin-bottom:12px;}
+
+  footer{ text-align:center; padding:36px 20px 46px; color:var(--ink-soft); font-size:13px; }
+
+  /* ---------- Mobile ---------- */
+  @media (max-width:640px){
+    .hero{padding:28px 16px 32px;}
+    .filters{padding:0 16px;}
+    .active-bar{padding:0 16px;}
+    .grid{padding:0 16px 50px; grid-template-columns:1fr; gap:14px;}
+    .overlay{padding:0; align-items:flex-end;}
+    .modal{border-radius:20px 20px 0 0; margin-top:0; max-height:94vh; overflow-y:auto;}
+    .info-grid{grid-template-columns:1fr 1fr;}
+    .modal-head, .modal-body, .form-step, .modal-footer{padding-left:20px; padding-right:20px;}
+  }
+  @media (max-width:380px){
+    .info-grid{grid-template-columns:1fr;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important; scroll-behavior:auto !important;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="hero-eyebrow">מתנ"ס בית אל · תשפ"ז</span>
+    <h1>חוגים לכל המשפחה</h1>
+    <p class="sub">מספורט וריקוד ועד יוגה, אלקטרוניקה וערבית מדוברת — כל החוגים שלנו במקום אחד, מסוננים לפי תחום, גיל ויום.</p>
+    <div class="search-wrap">
+      <input id="searchInput" type="text" placeholder="חיפוש חוג, מדריך/ה או תחום...">
+    </div>
+  </div>
+</header>
+
+<div class="filters">
+  <div class="filter-label">תחום</div>
+  <div class="chip-row" id="categoryChips"></div>
+  <div class="filter-label">גיל</div>
+  <div class="chip-row" id="ageChips"></div>
+  <div class="filter-label">יום בשבוע</div>
+  <div class="chip-row" id="dayChips"></div>
+</div>
+
+<div class="active-bar">
+  <div class="results-meta" id="resultsMeta"></div>
+  <button class="reset-btn" id="resetBtn">איפוס כל המסננים ✕</button>
+</div>
+
+<div class="grid" id="grid"></div>
+<div class="empty-state" id="emptyState" style="display:none;">
+  <div class="big">🔎</div>
+  לא נמצאו חוגים התואמים את הסינון שבחרת.
+  <div><button id="emptyResetBtn">איפוס מסננים</button></div>
+</div>
+
+<footer>
+  מתנ"ס בית אל &middot; לשאלות ותיאום ניתן ליצור קשר במזכירות המתנ"ס
+</footer>
+
+<!-- ---------- Detail / Registration Modal ---------- -->
+<div class="overlay" id="overlay">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<script>
+let COURSES = [];
+
+const CATEGORY_COLORS = [
+  {keys:['כדורגל','כדורסל','טאווקנדו'], bg:'var(--coral-soft)', fg:'var(--coral)'},
+  {keys:['ריקוד','מחול','תיאטרון','ריקודי עם'], bg:'var(--plum-soft)', fg:'var(--plum)'},
+  {keys:['כושר','יוגה','פלדנקרייז'], bg:'var(--teal-soft)', fg:'var(--teal)'},
+  {keys:['אלקטרוניקה','טבע'], bg:'var(--sky-soft)', fg:'var(--sky)'},
+  {keys:['ערבית'], bg:'var(--gold-soft)', fg:'#8a6a12'},
+];
+function colorFor(category){
+  for(const g of CATEGORY_COLORS){ if(g.keys.some(k=>category.includes(k))) return g; }
+  return {bg:'var(--gold-soft)', fg:'#8a6a12'};
+}
+
+const DAYS = ['ראשון','שני','שלישי','רביעי','חמישי','שישי'];
+
+// Google Sheet web app URL - reads courses (GET) and writes registrations (POST)
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbz0WTveKWb5ipeMDxLyvfj-pKKYsI89ySBp0o5DbQ--49WwUCmLRe3TlYK3BOESkRZA4g/exec";
+
+// ---- derive an age-group label from the course name/category (mirrors the original data prep) ----
+function deriveAgeGroup(name, category){
+  name = name || ''; category = category || '';
+  const checks = [
+    ['גן חובה', 'גיל הרך (גן-ב׳)'],
+    ['א-ב', 'גיל הרך (גן-ב׳)'],
+    ['א-ג', 'כיתות א׳-ד׳'],
+    ['ב-ג', 'כיתות א׳-ד׳'],
+    ['ג-ד', 'כיתות א׳-ד׳'],
+    ['ד-ה', 'כיתות ה׳-ח׳'],
+    ['ד-ו', 'כיתות ה׳-ח׳'],
+    ['ה-ו', 'כיתות ה׳-ח׳'],
+    ['ו-ח', 'כיתות ה׳-ח׳'],
+    ['ז-ח', 'כיתות ה׳-ח׳'],
+    ['א-ו', 'ילדים (כל הגילאים)'],
+  ];
+  for(const [pat,label] of checks){ if(name.includes(pat)) return label; }
+  if(name.includes('נער') || category.includes('נער')) return 'נוער';
+  if(name.includes('נשים') || category.includes('נשים')) return 'נשים';
+  if(name.includes('גברים') || category.includes('גברים')) return 'גברים';
+  if(name.includes('בנות') || name.includes('בנים')) return 'ילדים (כל הגילאים)';
+  return 'מבוגרים / כולם';
+}
+
+// ---- derive a display icon from the category ----
+function deriveIcon(category){
+  category = category || '';
+  const map = [
+    ['פלדנקרייז','🧘'],['כושר','💪'],['ריקוד לטיני','💃'],['טאווקנדו','🥋'],
+    ['ריקודי עם','🕺'],['כדורגל','⚽'],['כדורסל','🏀'],['אלקטרוניקה','🔌'],
+    ['יוגה','🧘'],['תיאטרון','🎭'],['מחול','🩰'],['טבע','🌿'],['ערבית','🗣️'],
+  ];
+  for(const [key,icon] of map){ if(category.includes(key)) return icon; }
+  return '⭐';
+}
+
+// ---- fetch the live course list from the Google Sheet and normalize it ----
+async function loadCourses(){
+  const grid = document.getElementById('grid');
+  grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="big">⏳</div>טוען את רשימת החוגים...</div>`;
+
+  try{
+    const res = await fetch(SHEET_URL + '?action=courses');
+    const data = await res.json();
+    const rows = data.courses || [];
+
+    COURSES = rows.map((r, i) => {
+      const category = (r['תחום']||'').toString().trim();
+      const name = (r['שם החוג']||'').toString().trim();
+      return {
+        id: 'c'+i,
+        category,
+        name,
+        instructor: (r['מדריך/מדריכה']||'').toString().trim(),
+        time: (r['שעת החוג']||'').toString().trim(),
+        day: (r['יום']||'').toString().trim(),
+        location: (r['מיקום']||'').toString().trim() || 'יתעדכן בהמשך',
+        description: (r['מלל']||'').toString().trim() || 'פרטים נוספים יתעדכנו בקרוב.',
+        price: (r['מחיר של החוג']||'').toString().trim() || 'המחיר יתעדכן',
+        phone: (r['טלפון']||'').toString().trim(),
+        paymentLink: (r['קישור']||'').toString().trim() || 'https://www.matnas-betel.org.il/page.php?type=hugSearch',
+        ageGroup: deriveAgeGroup(name, category),
+        icon: deriveIcon(category),
+      };
+    }).filter(c => c.name);
+  }catch(err){
+    console.error('Failed to load courses from sheet', err);
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="big">⚠️</div>לא הצלחנו לטעון את רשימת החוגים כרגע. נסו לרענן את הדף.</div>`;
+    return false;
+  }
+  return true;
+}
+
+// Short, plain-language summary of the matnas' own registration terms (see full policy via the link in the form)
+const TERMS_SUMMARY = `
+<b>עיקרי התקנון:</b><br>
+• ההרשמה מושלמת רק לאחר מילוי טופס זה <b>וגם</b> ביצוע תשלום באתר התשלומים של המתנ"ס.<br>
+• רישום עד ה-15 לחודש מחויב בעלות חודשית מלאה; לאחר ה-15 בחצי מהעלות.<br>
+• פתיחת חוג מותנית במספר נרשמים מינימלי, והמתנ"ס רשאי שלא לפתוח חוג בהתאם.<br>
+• היעדרות מפגישה אינה פוטרת מתשלום, למעט מקרים חריגים (כגון מחלה ממושכת, באישור רפואי).<br>
+• ביטול חוג אפשרי רק עד למועד שנקבע ע"י המתנ"ס בתחילת שנת הפעילות.<br>
+<a href="https://www.matnas-betel.org.il/page.php?type=page&id=8044" target="_blank" rel="noopener">למדיניות הפרטיות ולנוסח התקנון המלא באתר המתנ"ס</a>
+`;
+
+let state = { search:'', category:'הכל', age:'הכל', day:'הכל' };
+
+function uniqueSorted(arr){ return [...new Set(arr)]; }
+
+function buildFilters(){
+  const cats = ['הכל', ...uniqueSorted(COURSES.map(c=>c.category))];
+  const ages = ['הכל', ...uniqueSorted(COURSES.map(c=>c.ageGroup))];
+
+  document.getElementById('categoryChips').innerHTML = cats.map(c=>
+    `<button class="chip ${state.category===c?'active':''}" data-type="category" data-val="${c}">${c}</button>`
+  ).join('');
+
+  document.getElementById('ageChips').innerHTML = ages.map(a=>
+    `<button class="chip ${state.age===a?'active':''}" data-type="age" data-val="${a}">${a}</button>`
+  ).join('');
+
+  document.getElementById('dayChips').innerHTML = ['הכל', ...DAYS].map(d=>
+    `<button class="chip ${state.day===d?'active':''}" data-type="day" data-val="${d}">${d}</button>`
+  ).join('');
+
+  document.querySelectorAll('[data-type]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state[btn.dataset.type] = btn.dataset.val;
+      buildFilters();
+      renderGrid();
+    });
+  });
+
+  const anyActive = state.category!=='הכל' || state.age!=='הכל' || state.day!=='הכל' || state.search.trim()!=='';
+  document.getElementById('resetBtn').classList.toggle('show', anyActive);
+}
+
+function resetFilters(){
+  state = { search:'', category:'הכל', age:'הכל', day:'הכל' };
+  document.getElementById('searchInput').value='';
+  buildFilters();
+  renderGrid();
+}
+document.getElementById('resetBtn').addEventListener('click', resetFilters);
+document.getElementById('emptyResetBtn').addEventListener('click', resetFilters);
+
+function matches(course){
+  const s = state.search.trim().toLowerCase();
+  if(s){
+    const hay = (course.name+' '+course.category+' '+course.instructor).toLowerCase();
+    if(!hay.includes(s)) return false;
+  }
+  if(state.category!=='הכל' && course.category!==state.category) return false;
+  if(state.age!=='הכל' && course.ageGroup!==state.age) return false;
+  if(state.day!=='הכל' && !course.day.includes(state.day)) return false;
+  return true;
+}
+
+function renderGrid(){
+  const list = COURSES.filter(matches);
+  const grid = document.getElementById('grid');
+  const empty = document.getElementById('emptyState');
+  document.getElementById('resultsMeta').textContent = `${list.length} מתוך ${COURSES.length} חוגים`;
+
+  if(list.length===0){
+    grid.innerHTML=''; empty.style.display='block'; return;
+  }
+  empty.style.display='none';
+
+  grid.innerHTML = list.map(c=>{
+    const col = colorFor(c.category);
+    return `
+    <article class="card" data-id="${c.id}">
+      <div class="card-top">
+        <div class="card-icon" style="background:${col.bg}; color:${col.fg};">${c.icon}</div>
+        <div class="tag-row">
+          <span class="tag" style="background:${col.bg}; color:${col.fg};">${c.category}</span>
+          <span class="tag" style="background:var(--bg); color:var(--ink-soft);">${c.ageGroup}</span>
+        </div>
+        <h3>${c.name}</h3>
+        <div class="meta-line">🗓️ ${c.day} &nbsp;·&nbsp; 🕒 ${c.time}</div>
+        <div class="meta-line">📍 ${c.location}</div>
+        ${c.phone ? `<div class="meta-line">📞 ${c.instructor ? c.instructor+' · ' : ''}${c.phone}</div>` : ''}
+      </div>
+      <div class="card-desc">${c.description}</div>
+      <div class="card-bottom">
+        <span class="price">${c.price}</span>
+        <span class="cta-mini">לפרטים והרשמה ←</span>
+      </div>
+    </article>`;
+  }).join('');
+
+  grid.querySelectorAll('.card').forEach(card=>{
+    card.addEventListener('click', ()=> openDetail(card.dataset.id));
+  });
+}
+
+function openDetail(id){
+  const c = COURSES.find(x=>x.id===id);
+  const col = colorFor(c.category);
+  const modal = document.getElementById('modalContent');
+  modal.innerHTML = `
+    <div class="modal-head">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-icon" style="background:${col.bg}; color:${col.fg};">${c.icon}</div>
+      <div class="tag-row">
+        <span class="tag" style="background:${col.bg}; color:${col.fg};">${c.category}</span>
+        <span class="tag" style="background:var(--bg); color:var(--ink-soft);">${c.ageGroup}</span>
+      </div>
+      <h2>${c.name}</h2>
+    </div>
+    <div class="modal-body">
+      <p>${c.description}</p>
+      <div class="info-grid">
+        <div class="info-item"><div class="lbl">מדריך/ה</div><div class="val">${c.instructor||'יעודכן'}</div></div>
+        <div class="info-item"><div class="lbl">מחיר</div><div class="val">${c.price}</div></div>
+        <div class="info-item"><div class="lbl">יום ושעה</div><div class="val">${c.day}, ${c.time}</div></div>
+        <div class="info-item"><div class="lbl">מיקום</div><div class="val">${c.location}</div></div>
+        ${c.phone ? `<div class="info-item"><div class="lbl">טלפון מדריך/ה</div><div class="val"><a href="tel:${c.phone}">${c.phone}</a></div></div>` : ''}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="openForm('${c.id}')">המשך להרשמה</button>
+      <button class="btn btn-secondary" onclick="closeModal()">חזרה לרשימת החוגים</button>
+    </div>
+  `;
+  document.getElementById('overlay').classList.add('open');
+}
+
+function openForm(id){
+  const c = COURSES.find(x=>x.id===id);
+  const modal = document.getElementById('modalContent');
+  const today = new Date().toISOString().split('T')[0];
+  modal.innerHTML = `
+    <div class="modal-head">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h2>טופס הרשמה מקדים</h2>
+      <div class="meta-line">${c.name} · ${c.day} ${c.time}</div>
+    </div>
+    <form id="regForm" onsubmit="return submitForm(event, '${c.id}')">
+      <div class="form-step">
+        <div class="field">
+          <label for="fname">שם פרטי של הנרשם/ת</label>
+          <input type="text" id="fname" required>
+        </div>
+        <div class="field">
+          <label for="lname">שם משפחה</label>
+          <input type="text" id="lname" required>
+        </div>
+        <div class="field readonly">
+          <label for="course">שם החוג</label>
+          <input type="text" id="course" value="${c.name}" readonly>
+        </div>
+        <div class="field">
+          <label for="phone">טלפון</label>
+          <input type="tel" id="phone" required>
+        </div>
+        <div class="field">
+          <label for="entryDate">תאריך כניסה לחוג (כולל שיעור ניסיון)</label>
+          <input type="date" id="entryDate" value="${today}" required>
+        </div>
+        <div class="form-note">
+          ⚠️ שימו לב: ההרשמה לא תושלם עד לביצוע התשלום באתר התשלומים של המתנ"ס. לאחר שליחת טופס זה תועברו להשלמת התשלום וההרשמה הרשמית.
+        </div>
+        <button type="button" class="terms-toggle" onclick="document.getElementById('termsPanel').classList.toggle('open')">קראו את עיקרי התקנון</button>
+        <div class="terms-panel" id="termsPanel">${TERMS_SUMMARY}</div>
+        <label class="checkbox-field">
+          <input type="checkbox" required>
+          <span>אני מאשר/ת שקראתי את התקנון ומדיניות הפרטיות של המתנ"ס ומסכימ/ה לתנאיו.</span>
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">שליחה והמשך לתשלום</button>
+        <button type="button" class="btn btn-secondary" onclick="openDetail('${c.id}')">חזרה</button>
+      </div>
+    </form>
+  `;
+}
+
+async function submitForm(e, id){
+  e.preventDefault();
+  const c = COURSES.find(x=>x.id===id);
+  const fname = document.getElementById('fname').value;
+  const lname = document.getElementById('lname').value;
+  const phone = document.getElementById('phone').value;
+  const entryDate = document.getElementById('entryDate').value;
+
+  const modal = document.getElementById('modalContent');
+  modal.innerHTML = `
+    <div class="success-box">
+      <div class="big">⏳</div>
+      <h2>רק רגע, מעבירים אתכם לתשלום...</h2>
+    </div>
+  `;
+
+  const payload = { fname, lname, course:c.name, phone, entryDate };
+
+  try{
+    // no-cors + text/plain avoids a slow preflight request against Apps Script
+    await fetch(SHEET_URL, {
+      method:'POST',
+      mode:'no-cors',
+      headers:{ 'Content-Type':'text/plain' },
+      body: JSON.stringify(payload)
+    });
+  }catch(err){
+    console.error('Sheet submission failed', err);
+  }
+
+  window.location.href = c.paymentLink;
+  return false;
+}
+
+function closeModal(){
+  document.getElementById('overlay').classList.remove('open');
+}
+document.getElementById('overlay').addEventListener('click', (e)=>{
+  if(e.target.id==='overlay') closeModal();
+});
+
+document.getElementById('searchInput').addEventListener('input', (e)=>{
+  state.search = e.target.value;
+  buildFilters();
+  renderGrid();
+});
+
+(async function init(){
+  const ok = await loadCourses();
+  if(ok){
+    buildFilters();
+    renderGrid();
+  }
+})();
+</body>
+</html>
